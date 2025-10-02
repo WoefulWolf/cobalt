@@ -10,8 +10,18 @@ let urlMap = {};
 
 export function loadDb() {
     if (dbFile && fs.existsSync(dbFile)) {
-        urlMap = JSON.parse(fs.readFileSync(dbFile, 'utf8'));
-        console.log(`${Green('[✓]')} short urls db loaded successfully!`);
+        const content = fs.readFileSync(dbFile, 'utf8').trim();
+        if (content) {
+            try {
+                urlMap = JSON.parse(content);
+                console.log(`${Green('[✓]')} short urls db loaded successfully!`);
+            } catch (err) {
+                console.error(`${Red('[✗]')} Failed to parse short urls db:`, err);
+                urlMap = {};
+            }
+        } else {
+            urlMap = {};
+        }
     }
 }
 
