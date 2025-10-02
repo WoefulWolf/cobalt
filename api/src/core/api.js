@@ -278,6 +278,7 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
                     const id = URLShortener.shortenUrl(result.body.url);
                     result.body.url = new URL(id, env.apiURL).toString();
                 }
+                console.log("URL has been shortened.")
             }
 
             res.status(result.status).json(result.body);
@@ -339,6 +340,7 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
         app.get('/:id', (req, res) => {
             const longUrl = URLShortener.resolveUrl(req.params.id);
             if (longUrl) {
+                console.log("Redirecting shortened URL!")
                 res.redirect(longUrl);
             } else {
                 res.status(404).send("Not found");
