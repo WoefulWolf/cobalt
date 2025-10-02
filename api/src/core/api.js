@@ -280,8 +280,6 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
                 }
             }
 
-            console.log(result.body);
-
             res.status(result.status).json(result.body);
         } catch {
             fail(res, "error.api.generic");
