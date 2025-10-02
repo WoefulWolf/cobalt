@@ -24,6 +24,8 @@ import * as APIKeys from "../security/api-keys.js";
 import * as Cookies from "../processing/cookie/manager.js";
 import * as YouTubeSession from "../processing/helpers/youtube-session.js";
 
+import * as URLShortener from '../util/shortener.js';
+
 const git = {
     branch: await getBranch(),
     commit: await getCommit(),
@@ -200,6 +202,7 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
             const { status, body } = createResponse("error", {
                 code: "error.api.invalid_body",
             });
+
             return res.status(status).json(body);
         }
 
@@ -270,6 +273,15 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
                 authType: req.authType ?? "none",
             });
 
+            if (env.shortenUrls) {
+                if ("url" in result.body) {
+                    const id = URLShortener.shortenUrl(result.body.url);
+                    result.body.url = new URL(id, env.apiURL).toString();
+                }
+            }
+
+            console.log(result.body);
+
             res.status(result.status).json(result.body);
         } catch {
             fail(res, "error.api.generic");
@@ -324,6 +336,17 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
     app.get('/favicon.ico', (req, res) => {
         res.status(404).end();
     })
+
+    if (env.shortenUrls) {
+        app.get('/:id', (req, res) => {
+            const longUrl = URLShortener.resolveUrl(req.params.id);
+            if (longUrl) {
+                res.redirect(longUrl);
+            } else {
+                res.status(404).send("Not found");
+            }
+        });
+    }
 
     app.get('/*', (req, res) => {
         res.redirect('/');
@@ -381,6 +404,10 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
 
         if (env.ytSessionServer) {
             YouTubeSession.setup();
+        }
+
+        if (env.shortenUrls) {
+            URLShortener.loadDb()
         }
     });
 

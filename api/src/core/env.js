@@ -131,6 +131,9 @@ export const loadEnvs = (env = process.env) => {
         envFile: env.API_ENV_FILE,
         envRemoteReloadInterval: 300,
 
+        shortenUrls: env.SHORTEN_URLS === "true",
+        shortUrlsPath: env.SHORT_URLS_PATH,
+
         subscribe,
     };
 }
