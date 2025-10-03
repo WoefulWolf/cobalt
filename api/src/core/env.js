@@ -132,7 +132,7 @@ export const loadEnvs = (env = process.env) => {
         envRemoteReloadInterval: 300,
 
         shortenUrls: env.SHORTEN_URLS === "true",
-        shortUrlsPath: env.SHORT_URLS_PATH,
+        shortUrlsDir: env.SHORT_URLS_DIR,
 
         subscribe,
     };
