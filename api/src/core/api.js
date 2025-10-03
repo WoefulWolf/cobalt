@@ -276,7 +276,12 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
             if (env.shortenUrls) {
                 if ("url" in result.body) {
                     const id = URLShortener.shortenUrl(result.body.url);
-                    result.body.url = new URL(id, env.apiURL).toString();
+                    console.log(result.body.url)
+                    console.log(id)
+                    console.log(env.apiURL)
+                    const apiBase = env.apiURL.endsWith('/') ? env.apiURL : env.apiURL + '/';
+                    result.body.url = new URL(id, apiBase).toString();
+                    console.log(result.body)
                 }
                 console.log("URL has been shortened.")
             }
