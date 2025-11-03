@@ -337,7 +337,8 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
 
     if (env.shortenUrls) {
         app.get('/:id', (req, res) => {
-            const longUrl = URLShortener.resolveUrl(req.params.id);
+            const [cleanId, extraParams] = req.params.id.split(/[&?](.*)/s).filter(Boolean);
+            const longUrl = URLShortener.resolveUrl(cleanId);
             if (longUrl) {
                 res.redirect(longUrl);
             } else {

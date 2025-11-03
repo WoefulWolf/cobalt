@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { env } from "../config.js";
-import { Green } from "../misc/console-text.js";
+import { Green, Red } from "../misc/console-text.js";
 import fs from 'fs';
 import path from 'path';
 
