@@ -274,7 +274,7 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
             });
 
             if (env.shortenUrls) {
-                if ("url" in result.body) {
+                if ("url" in result.body && result.status == "redirect") {
                     const id = URLShortener.shortenUrl(result.body.url);
                     result.body.url = new URL(id, env.apiURL).toString();
                 }
