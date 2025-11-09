@@ -274,12 +274,34 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
             });
 
             if (env.shortenUrls) {
-                if ("url" in result.body && result.status == "redirect") {
-                    const id = URLShortener.shortenUrl(result.body.url);
+                if ("url" in result.body && result.body.status == "redirect") {
+                    // Extract file extension from URL or filename
+                    const url = result.body.url;
+                    const filename = result.body.filename || '';
+                    const ext = (filename.split('.').pop() || url.split('.').pop() || '').toLowerCase();
+
+                    // Dummy metadata
+                    const metadata = {
+                        title: "Test",
+                        description: "Test",
+                        thumbnail: undefined,
+                    };
+
+                    // Determine content type based on extension
+                    const videoExts = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv', 'm4v', 'gif'];
+                    const audioExts = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'opus'];
+
+                    if (videoExts.includes(ext)) {
+                        metadata.video = url;
+                        metadata.videoType = `video/${ext === 'mov' ? 'quicktime' : ext}`;
+                    } else if (audioExts.includes(ext)) {
+                        metadata.audio = url;
+                    }
+
+                    const id = URLShortener.shortenUrl(url, metadata);
                     result.body.url = new URL(id, env.apiURL).toString();
                 }
             }
-
             res.status(result.status).json(result.body);
         } catch {
             fail(res, "error.api.generic");
@@ -338,9 +360,11 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
     if (env.shortenUrls) {
         app.get('/:id', (req, res) => {
             const [cleanId, extraParams] = req.params.id.split(/[&?](.*)/s).filter(Boolean);
-            const longUrl = URLShortener.resolveUrl(cleanId);
-            if (longUrl) {
-                res.redirect(longUrl);
+            const data = URLShortener.resolveUrl(cleanId);
+            if (data) {
+                // Generate HTML with Open Graph tags for rich embeds
+                const html = URLShortener.generateEmbedHtml(data);
+                res.type('html').send(html);
             } else {
                 res.status(404).send("Not found");
             }
