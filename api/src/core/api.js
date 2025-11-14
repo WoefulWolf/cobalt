@@ -283,8 +283,8 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
                     // Dummy metadata
                     const metadata = {
                         title: "Test",
-                        description: filename,
-                        thumbnail: "https://placehold.co/720x1280/3b82f6/white.png?text=Test",
+                        description: "Test",
+                        thumbnail: "https://placehold.co/720x1280/3b82f6/white?text=Test",
                     };
 
                     // Determine content type based on extension
